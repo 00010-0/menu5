@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRAZY SPOT — Menu</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tilt+Neon&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme:{ extend:{
+  fontFamily:{
+    neon:['"Tilt Neon"','sans-serif'],
+    body:['Outfit','sans-serif'],
+    mono:['"JetBrains Mono"','monospace'],
+  },
+  colors:{
+    abyss:'#020611', cyan:'#00e5ff', blue:'#2979ff', ice:'#dff4ff',
+    steel:'#6b87a6',
+  }
+}}};
+</script>
+<style>
+:root{ --cyan:#00e5ff; --blue:#2979ff; --ice:#dff4ff; }
+html,body{ background:#020611; height:100%; overflow:hidden; }
+::selection{ background:var(--cyan); color:#020611; }
+
+#stage{ position:fixed; inset:0; z-index:0; }
+
+/* ======== letrero neón ======== */
+.neon-sign{
+  color:#fff;
+  text-shadow:
+    0 0 4px rgba(223,244,255,.95),
+    0 0 14px var(--cyan),
+    0 0 34px var(--cyan),
+    0 0 72px var(--blue),
+    0 0 120px var(--blue);
+  animation: neonFlicker 9s linear infinite;
+}
+@keyframes neonFlicker{
+  0%,100%{ opacity:1 }
+  3.2%{ opacity:.5 } 3.6%{ opacity:1 }
+  7.1%{ opacity:.75 } 7.3%{ opacity:1 }
+  46%{ opacity:1 } 46.4%{ opacity:.55 } 46.8%{ opacity:1 }
+  81%{ opacity:1 } 81.3%{ opacity:.7 } 81.5%{ opacity:1 }
+}
+
+/* ======== paneles con borde eléctrico ======== */
+.panel{
+  position:relative; border-radius:1rem;
+  background:
+    linear-gradient(165deg, rgba(0,229,255,.055), rgba(2,6,17,.55) 50%),
+    rgba(3,10,26,.62);
+  box-shadow: inset 0 0 30px rgba(41,121,255,.07);
+  backdrop-filter: blur(4px);
+}
+.panel::before{
+  content:''; position:absolute; inset:0; border-radius:1rem; padding:1px;
+  background: conic-gradient(from var(--spin,0deg),
+    rgba(0,229,255,.0) 0%, rgba(0,229,255,.9) 12%, rgba(41,121,255,.25) 30%,
+    rgba(0,229,255,0) 55%, rgba(41,121,255,.7) 78%, rgba(0,229,255,0) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: spin 8s linear infinite;
+}
+@property --spin{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+@keyframes spin{ to{ --spin:360deg } }
+
+/* ======== cabeceras de categoría ======== */
+.cat{
+  position:relative; display:inline-block;
+  font-family:'Tilt Neon';
+  color:var(--cyan); letter-spacing:.22em;
+  text-shadow:0 0 12px rgba(0,229,255,.85), 0 0 36px rgba(0,229,255,.45);
+}
+.cat::after{
+  content:''; position:absolute; left:0; bottom:-.4em; height:2px; width:100%;
+  background:linear-gradient(90deg, var(--cyan), transparent);
+  box-shadow:0 0 12px var(--cyan);
+  transform:scaleX(0); transform-origin:left;
+  animation: draw 1s cubic-bezier(.2,.8,.3,1) forwards;
+  animation-delay: inherit;
+}
+@keyframes draw{ to{ transform:scaleX(1) } }
+
+.brand{
+  color:#8fb4ff;
+  text-shadow:0 0 12px rgba(41,121,255,.75);
+}
+
+/* ======== filas ======== */
+.row{
+  display:flex; align-items:baseline; gap:.65rem;
+  padding:.17em .55em .17em .7em;
+  border-left:2px solid transparent; border-radius:.2rem;
+  transition: background .55s ease, border-color .55s ease, transform .55s ease;
+}
+.row .name{ font-weight:500; letter-spacing:.015em; color:rgba(223,244,255,.92); }
+.row .leader{
+  flex:1; min-width:1rem; transform:translateY(-.32em);
+  border-bottom:1px dashed rgba(107,135,166,.4);
+}
+.row .price{
+  font-weight:700; letter-spacing:-.02em;
+  font-feature-settings:'tnum'; color:var(--ice);
+  transition: color .5s, text-shadow .5s;
+}
+.row.glow{
+  border-left-color:var(--cyan);
+  background:linear-gradient(90deg, rgba(0,229,255,.13), rgba(0,229,255,.02) 70%);
+  transform:translateX(.25rem);
+}
+.row.glow .price{ color:var(--cyan); text-shadow:0 0 14px rgba(0,229,255,.9), 0 0 30px rgba(0,229,255,.4); }
+.row.glow .name{ color:#fff; font-weight:600; text-shadow:0 0 10px rgba(223,244,255,.5); }
+
+/* ======== entrada escalonada ======== */
+.item{ opacity:0; transform:translateY(22px); filter:blur(6px);
+  animation: rise .85s cubic-bezier(.2,.85,.3,1) forwards; }
+@keyframes rise{ to{ opacity:1; transform:none; filter:blur(0) } }
+
+/* ======== barrido de luz global ======== */
+.sweep{
+  position:fixed; inset:0; z-index:30; pointer-events:none;
+  background:linear-gradient(115deg, transparent 42%, rgba(0,229,255,.06) 50%, transparent 58%);
+  background-size:300% 100%;
+  animation: sweep 13s ease-in-out infinite;
+}
+@keyframes sweep{ 0%,55%{ background-position:130% 0 } 80%,100%{ background-position:-60% 0 } }
+
+.pulse{ animation:pulse 2s ease-in-out infinite; box-shadow:0 0 12px var(--cyan); }
+@keyframes pulse{ 0%,100%{ opacity:.4; transform:scale(.8) } 50%{ opacity:1; transform:scale(1.2) } }
+
+/* hueco donde aterriza el logo 3D (formato horizontal) */
+#logoAnchor{ width:9.5vw; height:6.4vw; min-width:120px; min-height:80px; }
+
+@media (prefers-reduced-motion: reduce){
+  .neon-sign,.panel::before,.sweep,.pulse{ animation:none !important; }
+  .item{ animation:none; opacity:1; transform:none; filter:none; }
+  .cat::after{ animation:none; transform:scaleX(1); }
+}
+</style>
+</head>
+<body class="font-body text-ice antialiased">
+
+<canvas id="stage"></canvas>
+<div class="sweep"></div>
+
+<main class="relative z-10 h-screen flex flex-col px-[2.6vw] py-[2.2vh]">
+
+  <!-- ======= HEADER ======= -->
+  <header class="item flex items-center justify-between pb-[1.6vh]" style="animation-delay:.1s">
+    <div class="flex items-center gap-[1.2vw]">
+      <div id="logoAnchor" class="shrink-0"></div>
+      <div>
+        <h1 class="font-neon neon-sign text-[3.1vw] leading-none tracking-wide">CRAZY&nbsp;SPOT</h1>
+        <p class="text-steel font-light uppercase tracking-[.6em] text-[.76vw] mt-[1vh] pl-1">Social&nbsp;Club&nbsp;·&nbsp;Menu</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-7">
+      <div class="flex items-center gap-2 uppercase font-medium tracking-[.3em] text-[.78vw] text-steel">
+        <span class="pulse inline-block w-2 h-2 rounded-full bg-cyan"></span> Solo socios
+      </div>
+      <div id="clock" class="font-mono font-bold text-[1.8vw] text-cyan tabular-nums" style="text-shadow:0 0 16px rgba(0,229,255,.7)">--:--</div>
+    </div>
+  </header>
+
+  <!-- ======= GRID ======= -->
+  <section class="flex-1 grid grid-cols-3 gap-[1.3vw] min-h-0">
+
+    <div class="item panel p-[1.2vw] flex flex-col min-h-0" style="animation-delay:.25s">
+      <h2 class="cat text-[1.45vw] mb-[1.6vh]" style="animation-delay:.6s">FLORES</h2>
+      <ul id="col-flores" class="flex-1 flex flex-col justify-between text-[1.12vw]"></ul>
+    </div>
+
+    <div class="item panel p-[1.2vw] flex flex-col min-h-0" style="animation-delay:.4s">
+      <h2 class="cat text-[1.45vw] mb-[1.6vh]" style="animation-delay:.75s">HASH</h2>
+      <div id="col-hash" class="flex-1 flex flex-col justify-between text-[1.02vw]"></div>
+    </div>
+
+    <div class="flex flex-col gap-[1.3vw] min-h-0">
+      <div class="item panel p-[1.2vw] flex-1 flex flex-col min-h-0" style="animation-delay:.55s">
+        <h2 class="cat text-[1.45vw] mb-[1.4vh]" style="animation-delay:.9s">EXTRACTOS &amp; MÁS</h2>
+        <ul id="col-extra" class="flex-1 flex flex-col justify-around text-[1.14vw]"></ul>
+      </div>
+      <div class="item panel p-[1.2vw] flex flex-col" style="animation-delay:.7s">
+        <h2 class="cat text-[1.45vw] mb-[1.4vh]" style="animation-delay:1.05s">BEBIDAS</h2>
+        <ul id="col-drinks" class="flex flex-col gap-[.6vh] text-[1.14vw]"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="item flex items-center justify-between pt-[1.5vh] uppercase font-light tracking-[.45em] text-[.72vw] text-steel" style="animation-delay:.9s">
+    <span>Asociación privada · prohibida la venta</span>
+    <span class="text-blue/80">consumo responsable · +18</span>
+  </footer>
+</main>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/* ============ DATOS ============ */
+const FLORES = [
+  ['Red Haze','13.50'], ['Event Horizon','18'], ['Zangria','19'],
+  ['Garlic Breath','19'], ['Purple Roses','12.50'], ['Crypto Chronic','18'],
+  ['Soda Pop','15'], ['Pink Guava','18'], ['Sushi','18'],
+  ['Cosmopolis','15'], ['Gas Guzzler','18'], ['Mind Melts','18'],
+];
+const HASH = [
+  ['Most Wanted', [['Permanent Marker','40'],['Gelato 33','50'],['La Kush Cake · Cali Dry','30']]],
+  ['Staticroom', [['Glitter Bomb','60'],['Megan Fox','60'],['Pōlen Frozen Sift · Lemon Cherry','40']]],
+  ['Sahas Terps', [['Tropical Juice','60'],['Banana Runtz','60']]],
+  ['One Stop CA', [['Gusher Mintz','40'],['Amaretto Mintz','40'],['FF Static','28'],['Gmo Static','18'],['WpFF','100']]],
+];
+const EXTRA  = [['Rosin','150'],['Edibles','25'],['Dirty Sprite','30']];
+const DRINKS = [['Agua','1.50'],['Cola','2.50'],['Ice Tea','2.50'],['Redbull','3.00']];
+
+const row = (n,p)=>`
+  <div class="row">
+    <span class="name">${n}</span>
+    <span class="leader"></span>
+    <span class="price font-mono" data-price="${p}">0€</span>
+  </div>`;
+
+document.getElementById('col-flores').innerHTML = FLORES.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-hash').innerHTML = HASH.map(([b,items])=>`
+  <div>
+    <h3 class="brand uppercase tracking-[.32em] text-[.8vw] font-semibold mb-[.5vh]">${b}</h3>
+    <ul class="flex flex-col gap-[.2vh]">${items.map(([n,p])=>`<li>${row(n,p)}</li>`).join('')}</ul>
+  </div>`).join('');
+document.getElementById('col-extra').innerHTML  = EXTRA.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-drinks').innerHTML = DRINKS.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============ precios contando hacia arriba ============ */
+const prices = [...document.querySelectorAll('.price')];
+prices.forEach((el,i)=>{
+  const target = parseFloat(el.dataset.price);
+  const dec = el.dataset.price.includes('.') ? 2 : 0;
+  if (reduced){ el.textContent = target.toFixed(dec)+'€'; return; }
+  const t0 = performance.now() + 600 + i*45, dur = 900;
+  (function tick(now){
+    const k = Math.min(1, (now - t0)/dur);
+    if (k>0){
+      const e = 1-Math.pow(1-k,3);
+      el.textContent = (target*e).toFixed(dec)+'€';
+    }
+    if (k<1) requestAnimationFrame(tick); else el.textContent = target.toFixed(dec)+'€';
+  })(performance.now());
+});
+
+/* ============ reloj ============ */
+const clock = document.getElementById('clock');
+const tickClock = ()=>{ const d=new Date();
+  clock.textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+tickClock(); setInterval(tickClock, 5000);
+
+/* ============ ciclo de resaltado ============ */
+if (!reduced){
+  const rows=[...document.querySelectorAll('.row')]; let i=-1;
+  setInterval(()=>{
+    if(i>=0) rows[i].classList.remove('glow');
+    i=(i+1)%rows.length; rows[i].classList.add('glow');
+  }, 2400);
+}
+
+/* ============ THREE.JS — fondo neón + logo ============ */
+const canvas = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50,1,.1,100);
+camera.position.set(0,0,7);
+
+/* --- shader: aurora eléctrica + rejilla en perspectiva --- */
+const U = { uTime:{value:0}, uRes:{value:new THREE.Vector2(1,1)} };
+const bg = new THREE.Mesh(new THREE.PlaneGeometry(2,2), new THREE.ShaderMaterial({
+  uniforms:U, depthWrite:false, depthTest:false,
+  vertexShader:`void main(){ gl_Position=vec4(position.xy,1.,1.); }`,
+  fragmentShader:`
+    uniform float uTime; uniform vec2 uRes;
+    float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+    float noise(vec2 p){ vec2 i=floor(p),f=fract(p); f*=f*(3.-2.*f);
+      return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y); }
+    float fbm(vec2 p){ float v=0.,a=.5; for(int i=0;i<5;i++){ v+=a*noise(p); p=p*2.05+11.3; a*=.55; } return v; }
+    void main(){
+      vec2 uv = gl_FragCoord.xy/uRes;
+      float ar = uRes.x/uRes.y;
+      vec2 p = (uv-.5)*vec2(ar,1.);
+      float t = uTime;
+
+      vec3 col = vec3(.004,.012,.04);
+
+      float a1 = fbm(vec2(p.x*1.8 + t*.05, p.y*3. - t*.10));
+      float a2 = fbm(vec2(p.x*3.5 - t*.08, p.y*1.5 + t*.06) + a1*1.4);
+      col += vec3(0.,.35,.55) * pow(smoothstep(.42,1.,a1),2.) * .8;
+      col += vec3(.08,.25,.85) * pow(smoothstep(.5,1.,a2),2.2) * .9;
+      col += vec3(.55,.9,1.) * pow(smoothstep(.78,1.,a1*a2*1.8),3.) * .8;
+
+      if (uv.y < .42){
+        float depth = (.42-uv.y)/.42 + .0001;
+        float z = 1./depth;
+        vec2 g = vec2(p.x*z*1.4, z*1.6 + t*1.2);
+        vec2 gridF = abs(fract(g)-.5);
+        float line = smoothstep(.48,.5,max(gridF.x,gridF.y));
+        float fade = smoothstep(.0,.5,depth);
+        col += vec3(0.,.8,1.) * line * fade * .33;
+        col += vec3(.1,.3,1.) * fade * .10;
+      }
+
+      float st = step(.9985, hash(floor(uv*uRes*.5)));
+      col += vec3(.6,.85,1.) * st * (.4+.6*sin(t*2.+uv.x*40.)) * smoothstep(.4,.9,uv.y);
+
+      col *= smoothstep(1.35,.4,length(uv-.5));
+      gl_FragColor = vec4(col,1.);
+    }`
+}));
+bg.frustumCulled = false; bg.renderOrder = -1;
+scene.add(bg);
+
+/* --- partículas cian ascendentes --- */
+const PN = reduced ? 0 : 220;
+let pts=null, vel=[];
+if (PN){
+  const pos=new Float32Array(PN*3);
+  for(let i=0;i<PN;i++){ pos[i*3]=(Math.random()-.5)*16; pos[i*3+1]=(Math.random()-.5)*9; pos[i*3+2]=(Math.random()-.5)*4;
+    vel.push(.06+Math.random()*.22); }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  pts=new THREE.Points(g,new THREE.PointsMaterial({ color:'#00e5ff', size:.04, transparent:true, opacity:.6,
+    blending:THREE.AdditiveBlending, depthWrite:false }));
+  scene.add(pts);
+}
+
+/* --- luces para el logo --- */
+scene.add(new THREE.AmbientLight('#9db9d6', 1.4));
+const keyL = new THREE.DirectionalLight('#ffffff', 2.4); keyL.position.set(2,3,5); scene.add(keyL);
+const rimC = new THREE.PointLight('#00e5ff', 18, 12); rimC.position.set(-2.5,2,2.5); scene.add(rimC);
+const rimB = new THREE.PointLight('#2979ff', 14, 12); rimB.position.set(2.5,-1,3); scene.add(rimB);
+
+/* --- logo GLB anclado al header --- */
+const logoGroup = new THREE.Group(); scene.add(logoGroup);
+let logoMax = 1.9, logoReady = false;
+
+/* halo de luz detrás del logo para que destaque */
+const haloTex = (()=>{
+  const c=document.createElement('canvas'); c.width=c.height=256;
+  const x=c.getContext('2d');
+  const g=x.createRadialGradient(128,128,0,128,128,128);
+  g.addColorStop(0,'rgba(0,229,255,.85)');
+  g.addColorStop(.35,'rgba(41,121,255,.35)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g; x.fillRect(0,0,256,256);
+  return new THREE.CanvasTexture(c);
+})();
+const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+  map:haloTex, transparent:true, opacity:.5,
+  blending:THREE.AdditiveBlending, depthWrite:false }));
+halo.scale.setScalar(2.6);
+logoGroup.add(halo);
+halo.position.z = -.15;
+
+function onLogo(gltf){
+  const obj = gltf.scene;
+  const box = new THREE.Box3().setFromObject(obj);
+  obj.position.sub(box.getCenter(new THREE.Vector3()));
+  const size = box.getSize(new THREE.Vector3());
+  logoMax = Math.max(size.x, size.y);
+  halo.scale.setScalar(logoMax*1.5);
+  logoGroup.add(obj);
+  logoReady = true;
+}
+const loader = new GLTFLoader();
+loader.load('logo.glb', onLogo, undefined, ()=>{
+  /* por si el archivo se guardó sin extensión */
+  loader.load('logo', onLogo, undefined, err=>console.warn('logo no encontrado', err));
+});
+
+const worldPerPx = ()=> 2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.position.z / innerHeight;
+function headerTransform(){
+  const r = document.getElementById('logoAnchor').getBoundingClientRect();
+  const ndc = new THREE.Vector2(((r.left+r.width/2)/innerWidth)*2-1, -(((r.top+r.height/2)/innerHeight)*2-1));
+  const v = new THREE.Vector3(ndc.x, ndc.y, .5).unproject(camera);
+  const dir = v.sub(camera.position).normalize();
+  const t = (0 - camera.position.z)/dir.z;
+  const pos = camera.position.clone().add(dir.multiplyScalar(t));
+  const s = (Math.max(r.width, r.height)*1.15) * worldPerPx() / logoMax;
+  return { pos, scale:s };
+}
+
+function resize(){
+  renderer.setSize(innerWidth,innerHeight,false);
+  camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix();
+  U.uRes.value.set(innerWidth*renderer.getPixelRatio(), innerHeight*renderer.getPixelRatio());
+}
+addEventListener('resize',resize); resize();
+
+let entered = false, enterT0 = 0;
+/* exhibición cada 10 s: giro completo + pop + destello */
+let showT0 = -1;
+const SHOW_EVERY = 10000, SHOW_DUR = 1700;
+const easeShow = x => 1-Math.pow(1-x,3);
+
+renderer.setAnimationLoop(tms=>{
+  const t = tms/1000;
+  U.uTime.value = t;
+
+  if (pts){
+    const a=pts.geometry.attributes.position;
+    for(let i=0;i<PN;i++){
+      let y=a.getY(i)+vel[i]*.016; if(y>4.8)y=-4.8;
+      a.setY(i,y); a.setX(i, a.getX(i)+Math.sin(t*.5+i)*.0012);
+    }
+    a.needsUpdate=true;
+  }
+
+  if (logoReady){
+    const h = headerTransform();
+    if (!entered){ entered = true; enterT0 = tms; showT0 = tms + SHOW_EVERY; }
+
+    /* entrada inicial con rebote */
+    const k = Math.min(1,(tms-enterT0)/900);
+    const e = reduced ? 1 : (1 - Math.pow(1-k,3)) * (1 + .15*Math.sin(k*Math.PI));
+
+    /* animación de exhibición periódica */
+    let spin = 0, pop = 1, flare = 0;
+    if (!reduced && showT0 > 0 && tms >= showT0){
+      const sk = (tms - showT0)/SHOW_DUR;
+      if (sk >= 1){ showT0 = tms + SHOW_EVERY - SHOW_DUR; }
+      else {
+        const se = easeShow(sk);
+        spin  = se * Math.PI * 2;                 // 360°
+        pop   = 1 + Math.sin(sk*Math.PI) * .3;    // crece y vuelve
+        flare = Math.sin(sk*Math.PI);             // destello
+      }
+    }
+
+    logoGroup.position.copy(h.pos);
+    logoGroup.scale.setScalar(h.scale * e * pop);
+    logoGroup.rotation.y = (reduced ? 0 : Math.sin(t*.55)*.35) + spin;
+    logoGroup.position.y += reduced ? 0 : Math.sin(t*1.4)*.018;
+
+    halo.material.opacity = .45 + flare*.45 + (reduced?0:Math.sin(t*2)*.08);
+    rimC.intensity = 16 + Math.sin(t*1.6)*6 + flare*30;
+    rimB.intensity = 12 + Math.cos(t*1.2)*5 + flare*22;
+  } else {
+    rimC.intensity = 16 + Math.sin(t*1.6)*6;
+    rimB.intensity = 12 + Math.cos(t*1.2)*5;
+  }
+
+  renderer.render(scene,camera);
+});
+</script>
+</body>
+</html>

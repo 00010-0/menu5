@@ -128,6 +128,45 @@ html,body{ background:#020611; height:100%; overflow:hidden; }
 }
 @keyframes sweep{ 0%,55%{ background-position:130% 0 } 80%,100%{ background-position:-60% 0 } }
 
+/* ======== reloj ======== */
+.clock-chip{
+  position:relative; text-align:center;
+  padding:.5vw 1.3vw .55vw;
+  border-radius:.8vw;
+  background:linear-gradient(160deg, rgba(0,229,255,.10), rgba(3,10,26,.7) 60%);
+  border:1px solid rgba(0,229,255,.35);
+  box-shadow:
+    0 0 18px rgba(0,229,255,.18),
+    inset 0 0 22px rgba(0,229,255,.07),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+.clock-chip::before{
+  content:''; position:absolute; left:12%; right:12%; top:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--cyan), transparent);
+  filter:drop-shadow(0 0 6px var(--cyan));
+}
+.clock-time{
+  font-size:2.1vw; font-weight:700; line-height:1; color:#fff;
+  text-shadow:0 0 8px rgba(223,244,255,.9), 0 0 24px var(--cyan), 0 0 60px rgba(41,121,255,.6);
+}
+.clock-sep{ animation: blink 1s steps(1) infinite; color:var(--cyan); }
+@keyframes blink{ 50%{ opacity:.15 } }
+.clock-sec{
+  font-size:.95vw; font-weight:500; color:var(--cyan);
+  margin-left:.45vw; vertical-align:.75vw; opacity:.85;
+  text-shadow:0 0 10px rgba(0,229,255,.8);
+}
+.clock-date{
+  margin-top:.3vw;
+  font-size:.62vw; font-weight:600; letter-spacing:.42em;
+  text-transform:uppercase; color:var(--ice); opacity:.75;
+}
+
+.feature-leader{
+  flex:1; min-width:1rem; transform:translateY(-.35em);
+  border-bottom:1px dashed rgba(0,229,255,.35);
+}
+
 .pulse{ animation:pulse 2s ease-in-out infinite; box-shadow:0 0 12px var(--cyan); }
 @keyframes pulse{ 0%,100%{ opacity:.4; transform:scale(.8) } 50%{ opacity:1; transform:scale(1.2) } }
 
@@ -215,7 +254,12 @@ html,body{ background:#020611; height:100%; overflow:hidden; }
       <div class="flex items-center gap-2 uppercase font-medium tracking-[.3em] text-[.78vw] text-steel">
         <span class="pulse inline-block w-2 h-2 rounded-full bg-cyan"></span> Solo socios
       </div>
-      <div id="clock" class="font-mono font-bold text-[1.8vw] text-cyan tabular-nums" style="text-shadow:0 0 16px rgba(0,229,255,.7)">--:--</div>
+      <div class="clock-chip">
+        <div class="clock-time font-mono tabular-nums">
+          <span id="clkH">--</span><span class="clock-sep">:</span><span id="clkM">--</span><span id="clkS" class="clock-sec">--</span>
+        </div>
+        <div id="clkDate" class="clock-date"></div>
+      </div>
     </div>
   </header>
 
@@ -223,8 +267,8 @@ html,body{ background:#020611; height:100%; overflow:hidden; }
   <section class="flex-1 grid grid-cols-3 gap-[1.3vw] min-h-0">
 
     <div class="item panel p-[1.2vw] flex flex-col min-h-0" style="animation-delay:.25s">
-      <h2 class="cat text-[1.45vw] mb-[1.6vh]" style="animation-delay:.6s">FLORES</h2>
-      <ul id="col-flores" class="flex-1 flex flex-col justify-between text-[1.12vw]"></ul>
+      <h2 class="cat text-[1.45vw] mb-[1.6vh]" style="animation-delay:.6s">WEED</h2>
+      <ul id="col-weed" class="flex-1 flex flex-col justify-between text-[1.12vw]"></ul>
     </div>
 
     <div class="item panel p-[1.2vw] flex flex-col min-h-0" style="animation-delay:.4s">
@@ -232,14 +276,26 @@ html,body{ background:#020611; height:100%; overflow:hidden; }
       <div id="col-hash" class="flex-1 flex flex-col justify-between text-[1.02vw]"></div>
     </div>
 
-    <div class="flex flex-col gap-[1.3vw] min-h-0">
-      <div class="item panel p-[1.2vw] flex-1 flex flex-col min-h-0" style="animation-delay:.55s">
-        <h2 class="cat text-[1.45vw] mb-[1.4vh]" style="animation-delay:.9s">EXTRACTOS &amp; MÁS</h2>
-        <ul id="col-extra" class="flex-1 flex flex-col justify-around text-[1.14vw]"></ul>
+    <div class="flex flex-col gap-[1vw] min-h-0">
+
+      <div class="item panel px-[1.2vw] pt-[.9vw] pb-[1vw]" style="animation-delay:.5s">
+        <h2 class="cat text-[1.25vw] mb-[1.1vh]" style="animation-delay:.85s">ROSIN</h2>
+        <ul id="col-rosin" class="text-[1.12vw]"></ul>
       </div>
-      <div class="item panel p-[1.2vw] flex flex-col" style="animation-delay:.7s">
-        <h2 class="cat text-[1.45vw] mb-[1.4vh]" style="animation-delay:1.05s">BEBIDAS</h2>
-        <ul id="col-drinks" class="flex flex-col gap-[.6vh] text-[1.14vw]"></ul>
+
+      <div class="item panel px-[1.2vw] pt-[.9vw] pb-[1vw]" style="animation-delay:.6s">
+        <h2 class="cat text-[1.25vw] mb-[1.1vh]" style="animation-delay:.95s">WPFF</h2>
+        <ul id="col-wpff" class="text-[1.12vw]"></ul>
+      </div>
+
+      <div class="item panel px-[1.2vw] pt-[.9vw] pb-[1vw]" style="animation-delay:.7s">
+        <h2 class="cat text-[1.25vw] mb-[1.1vh]" style="animation-delay:1.05s">EDIBLES</h2>
+        <ul id="col-edibles" class="flex flex-col gap-[.4vh] text-[1.12vw]"></ul>
+      </div>
+
+      <div class="item panel p-[1.2vw] flex-1 flex flex-col min-h-0" style="animation-delay:.8s">
+        <h2 class="cat text-[1.45vw] mb-[1.4vh]" style="animation-delay:1.15s">DRINKS</h2>
+        <ul id="col-drinks" class="flex-1 flex flex-col justify-around text-[1.12vw]"></ul>
       </div>
     </div>
   </section>
@@ -259,20 +315,23 @@ html,body{ background:#020611; height:100%; overflow:hidden; }
 import * as THREE from 'three';
 
 /* ============ DATOS ============ */
-const FLORES = [
-  ['Red Haze','13.50'], ['Event Horizon','18'], ['Zangria','19'],
-  ['Garlic Breath','19'], ['Purple Roses','12.50'], ['Crypto Chronic','18'],
-  ['Soda Pop','15'], ['Pink Guava','18'], ['Sushi','18'],
-  ['Cosmopolis','15'], ['Gas Guzzler','18'], ['Mind Melts','18'],
+const WEED = [
+  ['Purple Roses','12.50'], ['Red Haze','13.50'], ['Soda Pop','15'],
+  ['Cosmopolis','15'], ['Event Horizon','18'], ['Crypto Chronic','18'],
+  ['Pink Guava','18'], ['Sushi','18'], ['Gas Guzzler','18'],
+  ['Mind Melts','18'], ['Zangria','19'], ['Garlic Breath','19'],
 ];
 const HASH = [
-  ['Most Wanted', [['Permanent Marker','40'],['Gelato 33','50'],['La Kush Cake · Cali Dry','30']]],
-  ['Staticroom', [['Glitter Bomb','60'],['Megan Fox','60'],['Pōlen Frozen Sift · Lemon Cherry','40']]],
+  ['', [['Gmo Static','18'],['FF Static','28']]],
+  ['Most Wanted', [['La Kush Cake · Cali Dry','30'],['Permanent Marker','40'],['Gelato 33','50']]],
+  ['Staticroom', [['Pōlen Frozen Sift · Lemon Cherry','40'],['Glitter Bomb','60'],['Megan Fox','60']]],
   ['Sahas Terps', [['Tropical Juice','60'],['Banana Runtz','60']]],
-  ['One Stop CA', [['Gusher Mintz','40'],['Amaretto Mintz','40'],['FF Static','28'],['Gmo Static','18'],['WpFF','100']]],
+  ['One Stop CA', [['Gusher Mintz','40'],['Amaretto Mintz','40']]],
 ];
-const EXTRA  = [['Rosin','150'],['Edibles','25'],['Dirty Sprite','30']];
-const DRINKS = [['Agua','1.50'],['Cola','2.50'],['Ice Tea','2.50'],['Redbull','3.00']];
+const ROSIN   = [['Papaya','150']];
+const WPFF    = [['Power Puff Farm','100']];
+const EDIBLES = [['Gummies','25'],['Dirty Sprite','30']];
+const DRINKS  = [['Agua','1.50'],['Cola','2.50'],['Ice Tea','2.50'],['Redbull','3.00']];
 
 const row = (n,p)=>`
   <div class="row">
@@ -281,14 +340,16 @@ const row = (n,p)=>`
     <span class="price font-mono" data-price="${p}">0€</span>
   </div>`;
 
-document.getElementById('col-flores').innerHTML = FLORES.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-weed').innerHTML = WEED.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
 document.getElementById('col-hash').innerHTML = HASH.map(([b,items])=>`
   <div>
-    <h3 class="brand uppercase tracking-[.32em] text-[.8vw] font-semibold mb-[.5vh]">${b}</h3>
+    ${b ? `<h3 class="brand uppercase tracking-[.32em] text-[.8vw] font-semibold mb-[.5vh]">${b}</h3>` : ''}
     <ul class="flex flex-col gap-[.2vh]">${items.map(([n,p])=>`<li>${row(n,p)}</li>`).join('')}</ul>
   </div>`).join('');
-document.getElementById('col-extra').innerHTML  = EXTRA.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
-document.getElementById('col-drinks').innerHTML = DRINKS.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-rosin').innerHTML   = ROSIN.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-wpff').innerHTML    = WPFF.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-edibles').innerHTML = EDIBLES.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
+document.getElementById('col-drinks').innerHTML  = DRINKS.map(([n,p])=>`<li>${row(n,p)}</li>`).join('');
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -310,10 +371,16 @@ prices.forEach((el,i)=>{
 });
 
 /* ============ reloj ============ */
-const clock = document.getElementById('clock');
-const tickClock = ()=>{ const d=new Date();
-  clock.textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
-tickClock(); setInterval(tickClock, 5000);
+const clkH=document.getElementById('clkH'), clkM=document.getElementById('clkM'),
+      clkS=document.getElementById('clkS'), clkDate=document.getElementById('clkDate');
+const tickClock = ()=>{
+  const d=new Date();
+  clkH.textContent = String(d.getHours()).padStart(2,'0');
+  clkM.textContent = String(d.getMinutes()).padStart(2,'0');
+  clkS.textContent = String(d.getSeconds()).padStart(2,'0');
+  clkDate.textContent = d.toLocaleDateString('es-ES',{ weekday:'long', day:'numeric', month:'short' }).replace('.','');
+};
+tickClock(); setInterval(tickClock, 1000);
 
 /* ============ ciclo de resaltado ============ */
 if (!reduced){
